@@ -4,7 +4,7 @@ IOTDB Bridge for TCP (Connected Lights)
 
 XXX
 
-	$ npm install -g homestar
+	$ npm install -g homestar ## with 'sudo' if error
 	$ npm install iotdb
 	$ homestar install homestar-wemo
 	$ node
