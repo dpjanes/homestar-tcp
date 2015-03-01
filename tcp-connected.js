@@ -37,21 +37,15 @@ var templated = {
 
     RoomSendCommand: '<gip><version>1</version><token>{{ token }}</token><rid>{{ rid }}</rid><value>{{ value }}</value></gip>',
     RoomSendLevelCommand: '<gip><version>1</version><token>{{ token }}</token><rid>{{ rid }}</rid><value>{{ value }}</value><type>level</type></gip>',
-    DeviceSendCommand: '<gip><version>1</version><token>{{ token }}</token><did>{{ did }}</did><value>{{ value }}</value></gip>',
-    DeviceSendLevelCommand: '<gip><version>1</version><token>{{ token }}</token><did>{{ did }}</did><value>{{ value }}</value><type>level</type></gip>',
     LogInCommand: '<gip><version>1</version><email>{{ email }}</email><password>{{ password }}</password></gip>',
 };
-
 
 var TCPConnected = function(host, token) {
     var self = this;
 
-    if (!host) {
-        host = "lighting.local"
-    }
-
     self._host = host;
     self._token = token;
+
     self.rooms = [];
 };
 
@@ -89,34 +83,21 @@ TCPConnected.prototype.GetState = function (callback) {
 }
 
 TCPConnected.prototype.TurnOnRoomByName = function (name, callback) {
-    var self = this
-    var rid = this._GetRIDByName(name);
-    callback = callback ? callback : function() {};
-
-    var data = _.format(templated.RoomSendCommand, {
-        rid: rid, 
-        value: 1,
-        token: self._token,
-    });
-    var payload = _.format(templated.Request, {
-        cmd: 'RoomSendCommand', 
-        data: encodeURIComponent(data),
-        token: self._token,
-    });
-
-    self._request(payload, function (error, xml) {
-        callback(error);
-    });
+    this.SetRoomOnByName(name, true, callback);
 };
 
 TCPConnected.prototype.TurnOffRoomByName = function (name, callback) {
+    this.SetRoomOnByName(name, false, callback);
+};
+
+TCPConnected.prototype.SetRoomOnByName = function (name, on, callback) {
     var self = this
     var rid = this._GetRIDByName(name);
     callback = callback ? callback : function() {};
 
     var data = _.format(templated.RoomSendCommand, {
-        rid: rid, 
-        value: 0,
+        rid: rid,
+        value: on ? 1 : 0,
         token: self._token,
     });
     var payload = _.format(templated.Request, {
@@ -130,6 +111,9 @@ TCPConnected.prototype.TurnOffRoomByName = function (name, callback) {
     });
 };
 
+/**
+ *  Level is between 0 and 100
+ */
 TCPConnected.prototype.SetRoomLevelByName = function (name, level, callback) {
     var self = this
     var rid = this._GetRIDByName(name);
