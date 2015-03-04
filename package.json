@@ -4,15 +4,17 @@
         "url": "https://github.com/dpjanes/homestar-tcp/issues"
     }, 
     "dependencies": {
-        "iotdb": "",
         "unirest": "~0.4.0"
     }, 
-    "homestar": {},
     "description": "HomeStar / IOTDB Bridge for TCP Connected Lights", 
     "homepage": "https://homestar.io", 
+    "homestar": {}, 
     "license": "Apache-2.0", 
     "main": "index.js", 
     "name": "homestar-tcp", 
+    "peerDependencies": {
+        "iotdb": ">=0.5.3"
+    }, 
     "private": false, 
     "repository": {
         "type": "git", 
