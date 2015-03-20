@@ -16,6 +16,7 @@
 
 "use strict";
 
+/* this crap needs to go */
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var iotdb = require('iotdb');
@@ -48,6 +49,77 @@ var TCPConnected = function(host, token) {
 
     self.rooms = [];
 };
+
+/**
+ */
+TCPConnected.prototype.SyncGateway = function (callback){
+    var self = this;
+
+    var account_value = "tcp" + _.uid(16);
+
+	var data = _.format(templated.LogInCommand, {
+        email: account_value,
+        password: account_value,
+    });
+    var payload = _.format(templated.Request, {
+        cmd: 'GWRLogin', 
+        data: encodeURIComponent(data),
+    });
+
+    self._request(payload, function (error, xml) {
+        console.log("error", error);
+        console.log("xml", xml);
+    });
+
+    /*
+    var data - {
+    }
+	var gLogInCommand = util.format(LogInCommand,username,password);
+	var payload = util.format(RequestString,'GWRLogin',encodeURIComponent(gLogInCommand));
+	var options = {
+		hostname: this._host,
+		port: 443,
+		path: '/gwr/gop.php',
+		method: 'POST',
+		headers:{
+		  'Content-Type':'text/xml; charset="utf-8"',
+		  'Content-Length':payload.length
+		},
+		rejectUnauthorized: false,
+		agent: false
+	};
+	
+	tcpSocket = https.request(options, function(res) {
+		res.on('data', function(data){
+			process.stdout.write(data);
+			if(data == "<gip><version>1</version><rc>404</rc></gip>"){
+				console.log("Permission Denied: Gateway Not In Sync Mode. Press Button on Gateway to Sync.");
+				cb("gateway not in sync mode - press button on Gateway");
+			}else{
+                console.log(data)
+				xml(data,function(error,result){	
+                    console.log(error, error);
+					if(result['token'] != undefined){
+						this._token = result['token'];
+						nconf.use('file', { file: './config.json' });
+						nconf.set('token', this._token);
+						nconf.save(function (err) {
+							if (err) {
+								console.error(err.message);
+								return;
+							}
+							console.log('Configuration saved successfully.');
+						});
+						callback(null, result[token]);
+					}
+				});
+			}
+		});
+	});
+	
+	tcpSocket.write(payload);
+    */
+}
 
 /**
  */
@@ -221,15 +293,29 @@ TCPConnected.prototype._request = function (payload, callback) {
         })
         .send(payload)
         .end(function (result) {
+            console.log(result)
             if (!result.ok) {
-                console.log("# TCPConnected._request", "error", result.error)
+                logger.error({
+                    method: "_request",
+                    cause: "likely IP address or gateway is down",
+                    error: result.error,
+                }, "network error");
                 callback(result.error, null)
+            } else if (result.body === '<gip><version>1</version><rc>404</rc></gip>') {
+                callback('sync-not-pressed');
             } else if (result.body) {
                 xml2js.parseString(result.body, function (error, result) {
-                    callback(null, _flatten(result.gwrcmds))
+                    if (result.gip) {
+                        callback(null, _flatten(result.gip));
+                    } else {
+                        callback(null, _flatten(result.gwrcmds));
+                    }
                 });
             } else {
-                console.log("# TCPConnected._request", "no body - unexpected")
+                logger.error({
+                    method: "_request",
+                    cause: "likely TCP box error or connecting to wrong device",
+                }, "no body");
                 callback("no body", null)
             }
         });

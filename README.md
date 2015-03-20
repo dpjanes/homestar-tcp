@@ -3,6 +3,15 @@ IOTDB Bridge for TCP (Connected Lights)
 
 See <a href="samples/">the samples</a> for details how to add to your project.
 
+# Credits
+
+All the clever bits of connecting to TCP Lighting come from here:
+
+*  https://github.com/stockmopar/connectedbytcp
+*  http://home.stockmopar.com/connected-by-tcp-unofficial-api
+*  http://home.stockmopar.com/updated-connected-by-tcp-api/
+
+
 # Quick Start
 
 Set the light to half-bright

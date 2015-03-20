@@ -206,7 +206,7 @@ TCPConnectedBridge.prototype.pull = function() {
  *  <ul>
  *  <li><code>iot:thing</code> required - a unique ID
  *  <li><code>iot:device</code> suggested if linking multiple things together
- *  <li><code>iot:name</code>
+ *  <li><code>schema:name</code>
  *  <li><code>iot:number</code>
  *  <li><code>schema:manufacturer</code>
  *  <li><code>schema:model</code>
@@ -221,7 +221,7 @@ TCPConnectedBridge.prototype.meta = function() {
         // "iot:thing": _.id.thing_urn.unique("TCPConnected", self.initd.name),
         // "iot:device": _.id.thing_urn.unique("TCPConnected", self.initd.name),
         "schema:manufacturer": "http://www.tcpi.com/",
-        // "iot:name": self.initd.name || "Hue",
+        // "schema:name": self.initd.name || "Hue",
         // "iot:number": self.initd.number,
         // "schema:manufacturer": "http://philips.com/",
         // "schema:model": "http://meethue.com/",
