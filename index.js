@@ -22,7 +22,7 @@
 
 "use strict";
 
-exports.Bridge = require('./TCPConnectedBridge');
+exports.Bridge = require('./TCPConnectedBridge').Bridge;
 exports.bindings = [
     require('./TCPConnectedLight').binding,
 ];
