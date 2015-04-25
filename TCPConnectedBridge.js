@@ -173,6 +173,8 @@ TCPConnectedBridge.prototype.push = function(pushd) {
     if (!self.native) {
         return;
     }
+
+    self._validate_push(pushd);
 };
 
 /**
