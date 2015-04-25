@@ -33,7 +33,7 @@ echo "=================="
         README.md \
         LICENSE.txt \
         package.json homestar.json \
-        TCPConnectedBridge.js TCPConnectedLight.js tcp-connected.js \
+        TCPConnectedBridge.js models/TCPConnectedLight.js tcp-connected.js \
         |
     ( cd "${NPM_DST}" && tar xvf - )
 

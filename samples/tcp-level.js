@@ -2,9 +2,11 @@
  *  This demonstrates the the raw TCP functions
  */
 
-var TCPConnected = require('../tcp-connected');
-var tcp = new TCPConnected('192.168.0.11', 'dk0bdkn4ls3rj1dr4034xy10cy913k87am8dx179')
+"use strict";
 
-tcp.SetRoomLevelByName('Bedroom', 0.5, function(error, rooms) {
+var TCPConnected = require('../tcp-connected');
+var tcp = new TCPConnected('192.168.0.11', 'dk0bdkn4ls3rj1dr4034xy10cy913k87am8dx179');
+
+tcp.SetRoomLevelByName('Bedroom', 0.5, function (error, rooms) {
     console.log("SetRoomLevelByName", error, rooms);
 });

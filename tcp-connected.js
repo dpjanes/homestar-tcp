@@ -25,7 +25,7 @@ var bunyan = iotdb.bunyan;
 
 var util = require('util');
 var unirest = require('unirest');
-var xml2js = require('xml2js')
+var xml2js = require('xml2js');
 
 var logger = bunyan.createLogger({
     name: 'homestar-tcp',
@@ -41,7 +41,7 @@ var templated = {
     LogInCommand: '<gip><version>1</version><email>{{ email }}</email><password>{{ password }}</password></gip>',
 };
 
-var TCPConnected = function(host, token) {
+var TCPConnected = function (host, token) {
     var self = this;
 
     self._host = host;
@@ -52,17 +52,17 @@ var TCPConnected = function(host, token) {
 
 /**
  */
-TCPConnected.prototype.SyncGateway = function (callback){
+TCPConnected.prototype.SyncGateway = function (callback) {
     var self = this;
 
     var account_value = "tcp" + _.uid(16);
 
-	var data = _.format(templated.LogInCommand, {
+    var data = _.format(templated.LogInCommand, {
         email: account_value,
         password: account_value,
     });
     var payload = _.format(templated.Request, {
-        cmd: 'GWRLogin', 
+        cmd: 'GWRLogin',
         data: encodeURIComponent(data),
     });
 
@@ -119,19 +119,19 @@ TCPConnected.prototype.SyncGateway = function (callback){
 	
 	tcpSocket.write(payload);
     */
-}
+};
 
 /**
  */
 TCPConnected.prototype.GetState = function (callback) {
     var self = this;
-    callback = callback ? callback : function() {};
+    callback = callback ? callback : function () {};
 
-	var data = _.format(templated.GetState, {
+    var data = _.format(templated.GetState, {
         token: self._token,
     });
     var payload = _.format(templated.Request, {
-        cmd: 'GWRBatch', 
+        cmd: 'GWRBatch',
         data: encodeURIComponent(data),
         token: self._token,
     });
@@ -146,13 +146,13 @@ TCPConnected.prototype.GetState = function (callback) {
             } catch (err) {
                 var error = {
                     error: 'Unkown Error'
-                }
+                };
             }
         }
 
         callback(error || null, self.rooms);
-    })
-}
+    });
+};
 
 TCPConnected.prototype.TurnOnRoomByName = function (name, callback) {
     this.SetRoomOnByName(name, true, callback);
@@ -163,9 +163,9 @@ TCPConnected.prototype.TurnOffRoomByName = function (name, callback) {
 };
 
 TCPConnected.prototype.SetRoomOnByName = function (name, on, callback) {
-    var self = this
+    var self = this;
     var rid = this._GetRIDByName(name);
-    callback = callback ? callback : function() {};
+    callback = callback ? callback : function () {};
 
     var data = _.format(templated.RoomSendCommand, {
         rid: rid,
@@ -173,7 +173,7 @@ TCPConnected.prototype.SetRoomOnByName = function (name, on, callback) {
         token: self._token,
     });
     var payload = _.format(templated.Request, {
-        cmd: 'RoomSendCommand', 
+        cmd: 'RoomSendCommand',
         data: encodeURIComponent(data),
         token: self._token,
     });
@@ -187,9 +187,9 @@ TCPConnected.prototype.SetRoomOnByName = function (name, on, callback) {
  *  Level is between 0 and 100
  */
 TCPConnected.prototype.SetRoomLevelByName = function (name, level, callback) {
-    var self = this
+    var self = this;
     var rid = this._GetRIDByName(name);
-    callback = callback ? callback : function() {};
+    callback = callback ? callback : function () {};
 
     var data = _.format(templated.RoomSendLevelCommand, {
         rid: rid,
@@ -197,7 +197,7 @@ TCPConnected.prototype.SetRoomLevelByName = function (name, level, callback) {
         token: self._token,
     });
     var payload = _.format(templated.Request, {
-        cmd: 'RoomSendCommand', 
+        cmd: 'RoomSendCommand',
         data: encodeURIComponent(data),
         token: self._token,
     });
@@ -210,7 +210,7 @@ TCPConnected.prototype.SetRoomLevelByName = function (name, level, callback) {
 /* note that state must have been already pulled */
 TCPConnected.prototype.GetRoomStateByName = function (name, callback) {
     var self = this;
-    callback = callback ? callback : function() {};
+    callback = callback ? callback : function () {};
 
     self.rooms.forEach(function (room) {
         if (room["name"] === name) {
@@ -220,14 +220,14 @@ TCPConnected.prototype.GetRoomStateByName = function (name, callback) {
             var devices = room["device"];
             if (typeof (devices["did"]) !== 'undefined') {
                 i = i + 1;
-                if (devices["state"] != "0") {
+                if (devices["state"] !== "0") {
                     state = 1;
                     sum = sum + parseInt(devices["level"]);
                 }
             } else {
                 devices.forEach(function (device) {
                     i = i + 1;
-                    if (device["state"] != "0") {
+                    if (device["state"] !== "0") {
                         state = 1;
                         sum = sum + parseInt(device["level"]);
                     }
@@ -265,24 +265,24 @@ TCPConnected.prototype._GetRIDByName = function (name) {
 var _flatten = function (o) {
     if (Array.isArray(o)) {
         if (o.length === 1) {
-            return _flatten(o[0])
+            return _flatten(o[0]);
         } else {
-            var ns = []
+            var ns = [];
             for (var oi in o) {
-                ns.push(_flatten(o[oi]))
+                ns.push(_flatten(o[oi]));
             }
-            return ns
+            return ns;
         }
     } else if (typeof o === "object") {
-        var nd = {}
+        var nd = {};
         for (var nkey in o) {
-            nd[nkey] = _flatten(o[nkey])
+            nd[nkey] = _flatten(o[nkey]);
         }
-        return nd
+        return nd;
     } else {
-        return o
+        return o;
     }
-}
+};
 
 TCPConnected.prototype._request = function (payload, callback) {
     unirest
@@ -293,14 +293,14 @@ TCPConnected.prototype._request = function (payload, callback) {
         })
         .send(payload)
         .end(function (result) {
-            console.log(result)
+            console.log(result);
             if (!result.ok) {
                 logger.error({
                     method: "_request",
                     cause: "likely IP address or gateway is down",
                     error: result.error,
                 }, "network error");
-                callback(result.error, null)
+                callback(result.error, null);
             } else if (result.body === '<gip><version>1</version><rc>404</rc></gip>') {
                 callback('sync-not-pressed');
             } else if (result.body) {
@@ -316,7 +316,7 @@ TCPConnected.prototype._request = function (payload, callback) {
                     method: "_request",
                     cause: "likely TCP box error or connecting to wrong device",
                 }, "no body");
-                callback("no body", null)
+                callback("no body", null);
             }
         });
 };

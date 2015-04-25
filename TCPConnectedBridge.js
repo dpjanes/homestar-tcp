@@ -22,9 +22,9 @@
 
 "use strict";
 
-var homestar = require('homestar')
-var _ = homestar._;
-var bunyan = homestar.bunyan;
+var iotdb = require('iotdb');
+var _ = iotdb._;
+var bunyan = iotdb.bunyan;
 
 var TCPControlPoint = require('./tcp-connected');
 
@@ -39,12 +39,11 @@ var logger = bunyan.createLogger({
  *  @param {object|undefined} native
  *  only used for instances, should be 
  */
-var TCPConnectedBridge = function(initd, native) {
+var TCPConnectedBridge = function (initd, native) {
     var self = this;
 
     self.initd = _.defaults(initd,
-        iotdb.keystore().get("bridges/TCPConnectedBridge/initd"),
-        {
+        iotdb.keystore().get("bridges/TCPConnectedBridge/initd"), {
             host: "lighting.local",
             poll: 30,
         }
@@ -68,9 +67,9 @@ TCPConnectedBridge.prototype.name = function () {
 /**
  *  See {iotdb.bridge.Bridge#discover} for documentation.
  */
-TCPConnectedBridge.prototype.discover = function() {
+TCPConnectedBridge.prototype.discover = function () {
     var self = this;
-    
+
     var cp = new TCPControlPoint(self.initd.host);
 
     console.log("HERE:A");
@@ -108,7 +107,7 @@ TCPConnectedBridge.prototype.discover = function() {
 /**
  *  See {iotdb.bridge.Bridge#connect} for documentation.
  */
-TCPConnectedBridge.prototype.connect = function(connectd) {
+TCPConnectedBridge.prototype.connect = function (connectd) {
     var self = this;
     if (!self.native) {
         return;
@@ -116,18 +115,17 @@ TCPConnectedBridge.prototype.connect = function(connectd) {
 
     self._validate_connect(connectd);
 
-    return;
     self._setup_polling();
     self.pull();
 };
 
-TCPConnectedBridge.prototype._setup_polling = function() {
+TCPConnectedBridge.prototype._setup_polling = function () {
     var self = this;
     if (!self.initd.poll) {
         return;
     }
 
-    var timer = setInterval(function() {
+    var timer = setInterval(function () {
         if (!self.native) {
             clearInterval(timer);
             return;
@@ -137,7 +135,7 @@ TCPConnectedBridge.prototype._setup_polling = function() {
     }, self.initd.poll * 1000);
 };
 
-TCPConnectedBridge.prototype._forget = function() {
+TCPConnectedBridge.prototype._forget = function () {
     var self = this;
     if (!self.native) {
         return;
@@ -149,12 +147,12 @@ TCPConnectedBridge.prototype._forget = function() {
 
     self.native = null;
     self.pulled();
-}
+};
 
 /**
  *  See {iotdb.bridge.Bridge#disconnect} for documentation.
  */
-TCPConnectedBridge.prototype.disconnect = function() {
+TCPConnectedBridge.prototype.disconnect = function () {
     var self = this;
     if (!self.native || !self.native) {
         return;
@@ -168,7 +166,7 @@ TCPConnectedBridge.prototype.disconnect = function() {
 /**
  *  See {iotdb.bridge.Bridge#push} for documentation.
  */
-TCPConnectedBridge.prototype.push = function(pushd) {
+TCPConnectedBridge.prototype.push = function (pushd) {
     var self = this;
     if (!self.native) {
         return;
@@ -180,7 +178,7 @@ TCPConnectedBridge.prototype.push = function(pushd) {
 /**
  *  See {iotdb.bridge.Bridge#pull} for documentation.
  */
-TCPConnectedBridge.prototype.pull = function() {
+TCPConnectedBridge.prototype.pull = function () {
     var self = this;
     if (!self.native) {
         return;
@@ -193,7 +191,7 @@ TCPConnectedBridge.prototype.pull = function() {
 /**
  *  See {iotdb.bridge.Bridge#meta} for documentation.
  */
-TCPConnectedBridge.prototype.meta = function() {
+TCPConnectedBridge.prototype.meta = function () {
     var self = this;
     if (!self.native) {
         return;
@@ -213,18 +211,16 @@ TCPConnectedBridge.prototype.meta = function() {
 /**
  *  See {iotdb.bridge.Bridge#reachable} for documentation.
  */
-TCPConnectedBridge.prototype.reachable = function() {
+TCPConnectedBridge.prototype.reachable = function () {
     return this.native !== null;
 };
 
 /**
  *  See {iotdb.bridge.Bridge#configure} for documentation.
  */
-TCPConnectedBridge.prototype.configure = function(app) {
-};
+TCPConnectedBridge.prototype.configure = function (app) {};
 
 /*
  *  API
  */
 exports.Bridge = TCPConnectedBridge;
-
