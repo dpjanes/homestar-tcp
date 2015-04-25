@@ -114,6 +114,8 @@ TCPConnectedBridge.prototype.connect = function(connectd) {
         return;
     }
 
+    self._validate_connect(connectd);
+
     return;
     self._setup_polling();
     self.pull();
