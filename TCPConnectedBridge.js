@@ -66,7 +66,7 @@ TCPConnectedBridge.prototype.name = function () {
 /* --- lifecycle --- */
 
 /**
- *  See {iotdb.bridge.Bridge#XXX} for documentation.
+ *  See {iotdb.bridge.Bridge#discover} for documentation.
  */
 TCPConnectedBridge.prototype.discover = function() {
     var self = this;
@@ -106,7 +106,7 @@ TCPConnectedBridge.prototype.discover = function() {
 
 
 /**
- *  See {iotdb.bridge.Bridge#XXX} for documentation.
+ *  See {iotdb.bridge.Bridge#connect} for documentation.
  */
 TCPConnectedBridge.prototype.connect = function(connectd) {
     var self = this;
@@ -152,7 +152,7 @@ TCPConnectedBridge.prototype._forget = function() {
 }
 
 /**
- *  See {iotdb.bridge.Bridge#XXX} for documentation.
+ *  See {iotdb.bridge.Bridge#disconnect} for documentation.
  */
 TCPConnectedBridge.prototype.disconnect = function() {
     var self = this;
@@ -166,7 +166,7 @@ TCPConnectedBridge.prototype.disconnect = function() {
 /* --- data --- */
 
 /**
- *  See {iotdb.bridge.Bridge#XXX} for documentation.
+ *  See {iotdb.bridge.Bridge#push} for documentation.
  */
 TCPConnectedBridge.prototype.push = function(pushd) {
     var self = this;
@@ -178,7 +178,7 @@ TCPConnectedBridge.prototype.push = function(pushd) {
 };
 
 /**
- *  See {iotdb.bridge.Bridge#XXX} for documentation.
+ *  See {iotdb.bridge.Bridge#pull} for documentation.
  */
 TCPConnectedBridge.prototype.pull = function() {
     var self = this;
@@ -191,7 +191,7 @@ TCPConnectedBridge.prototype.pull = function() {
 /* --- state --- */
 
 /**
- *  See {iotdb.bridge.Bridge#XXX} for documentation.
+ *  See {iotdb.bridge.Bridge#meta} for documentation.
  */
 TCPConnectedBridge.prototype.meta = function() {
     var self = this;
@@ -211,14 +211,14 @@ TCPConnectedBridge.prototype.meta = function() {
 };
 
 /**
- *  See {iotdb.bridge.Bridge#XXX} for documentation.
+ *  See {iotdb.bridge.Bridge#reachable} for documentation.
  */
 TCPConnectedBridge.prototype.reachable = function() {
     return this.native !== null;
 };
 
 /**
- *  See {iotdb.bridge.Bridge#XXX} for documentation.
+ *  See {iotdb.bridge.Bridge#configure} for documentation.
  */
 TCPConnectedBridge.prototype.configure = function(app) {
 };
