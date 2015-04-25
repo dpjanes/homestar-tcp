@@ -219,15 +219,6 @@ TCPConnectedBridge.prototype.reachable = function() {
 TCPConnectedBridge.prototype.configure = function(app) {
 };
 
-/* --- injected: THIS CODE WILL BE REMOVED AT RUNTIME, DO NOT MODIFY  --- */
-TCPConnectedBridge.prototype.discovered = function(bridge) {
-    throw new Error("TCPConnectedBridge.discovered not implemented");
-};
-
-TCPConnectedBridge.prototype.pulled = function(pulld) {
-    throw new Error("TCPConnectedBridge.pulled not implemented");
-};
-
 /*
  *  API
  */
