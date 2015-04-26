@@ -6,9 +6,6 @@
     "dependencies": {
         "unirest": "~0.4.0"
     }, 
-    "peerDependencies": {
-        "iotdb": ">=0.4.16"
-    }, 
     "description": "HomeStar / IOTDB Bridge for Template", 
     "devDependencies": {
         "grunt": "~0.4.5", 
@@ -26,6 +23,9 @@
     "license": "Apache-2.0", 
     "main": "index.js", 
     "name": "homestar-tcp", 
+    "peerDependencies": {
+        "iotdb": ">=0.6.3"
+    }, 
     "private": false, 
     "repository": {
         "type": "git", 
@@ -34,5 +34,5 @@
     "scripts": {
         "test": "grunt"
     }, 
-    "version": "0.0.2"
+    "version": "0.0.3"
 }
