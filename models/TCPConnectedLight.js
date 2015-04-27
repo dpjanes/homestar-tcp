@@ -12,7 +12,7 @@ exports.Model = iotdb.make_model('TCPConnectedLight')
     .facet(":lighting")
     .name("TCP Connected Light")
     .o("on", iotdb.boolean.on)
-    .o("brightness", iotdb.number.brightness)
+    .o("brightness", iotdb.number.percent.brightness)
     .make();
 
 exports.binding = {

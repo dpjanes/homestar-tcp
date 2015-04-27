@@ -26,6 +26,8 @@ var iotdb = require('iotdb');
 var _ = iotdb._;
 var bunyan = iotdb.bunyan;
 
+var arp = require('iotdb-arp');
+
 var TCPControlPoint = require('./tcp-connected');
 
 var logger = bunyan.createLogger({
@@ -43,8 +45,10 @@ var TCPConnectedBridge = function (initd, native) {
     var self = this;
 
     self.initd = _.defaults(initd,
-        iotdb.keystore().get("bridges/TCPConnectedBridge/initd"), {
-            host: "lighting.local",
+        iotdb.keystore().get("bridges/TCPConnectedBridge/initd"),
+        {
+            arp: true,
+            host: null,
             poll: 30,
         }
     );
@@ -70,11 +74,48 @@ TCPConnectedBridge.prototype.name = function () {
 TCPConnectedBridge.prototype.discover = function () {
     var self = this;
 
-    var cp = new TCPControlPoint(self.initd.host);
+    if (self.initd.arp) {
+        self._discover_arp();
+    /*
+    } else if (self.initd.host) {
+        self._discover_host(self.initd.host); */
+    } else {
+        logger.error({
+            method: "discover",
+            cause: "either initd.arp or initd.host needs to be set",
+        }, "no discovery method");
+    }
+};
 
-    console.log("HERE:A");
-    cp.GetState(function (error, rooms) {
-        console.log("HERE:B");
+TCPConnectedBridge.prototype._discover_arp = function () {
+    var self = this;
+
+    logger.info({
+        method: "_discover_arp",
+    }, "called");
+
+    arp.browser({
+        verbose: true,
+        poll: 3 * 60,
+    }, function(error, arpd) {
+        if (!arpd) {
+            return;
+        }
+
+        if (!arpd.mac.match(/^D4:A9:28:/)) {
+            return;
+        }
+
+        self._discover_arpd(arpd);
+    });
+};
+
+TCPConnectedBridge.prototype._discover_arpd = function (arpd) {
+    var self = this;
+
+    var tcp = new TCPControlPoint(arpd.ip, 'dk0bdkn4ls3rj1dr4034xy10cy913k87am8dx179');
+
+    tcp.GetState(function (error, rooms) {
         if (rooms === null) {
             console.log("# TCPConnectDriver.discover/GetState", "no rooms?");
             return;
@@ -82,23 +123,10 @@ TCPConnectedBridge.prototype.discover = function () {
 
         for (var ri in rooms) {
             var room = rooms[ri];
-            console.log("Room", room);
-            /*
-            discover_callback(new TCPConnectedDriver({
-                room: room,
-                name: room.name
-            }));
-            */
+            room.mac = arpd.mac;
+            room.tcp = tcp;
 
-            /*
-            tcp.GetRoomStateByName(room.name, function(error,state,level){
-                console.log("State: " + state + " at Level: " + level);
-                if(state === 0){
-                    tcp.TurnOnRoomByName(room);
-                }
-            });
-            tcp.SetRoomLevelByName(room.name, 100);
-            */
+            self.discovered(new TCPConnectedBridge(self.initd, room));
         }
     });
 };
@@ -116,7 +144,7 @@ TCPConnectedBridge.prototype.connect = function (connectd) {
     self._validate_connect(connectd);
 
     self._setup_polling();
-    self.pull();
+    self._pulled();
 };
 
 TCPConnectedBridge.prototype._setup_polling = function () {
@@ -173,6 +201,41 @@ TCPConnectedBridge.prototype.push = function (pushd) {
     }
 
     self._validate_push(pushd);
+
+    var putd = {};
+
+    if (pushd.on !== undefined) {
+        putd.on = pushd.on;
+    }
+
+    if (pushd.brightness !== undefined) {
+        if (pushed.brightness === 0) {
+            putd.on = false;
+        } else {
+            putd.on = true;
+        }
+
+        putd.brightness = true;
+    }
+
+    var qitem = {
+        id: "push",
+        run: function () {
+            if (putd.on) {
+                self.native.tcp.TurnOnRoomByName(self.native.name);
+            } else {
+                self.native.tcp.TurnOffRoomByName(self.native.name);
+            }
+
+            if (putd.brightness !== undefined) {
+                self.native.tcp.SetRoomLevelByName(self.native.name, putd.brightness);
+            }
+            
+            self.pulled(putd);
+            self.queue.finished(qitem);
+        }
+    };
+    self.queue.add(qitem);
 };
 
 /**
@@ -184,6 +247,45 @@ TCPConnectedBridge.prototype.pull = function () {
         return;
     }
 
+    var qitem = {
+        id: "pull",
+        run: function () {
+            self.native.tcp.GetState(function(error, rooms) {
+                if (error) {
+                } else {
+                    for (var ri in rooms) {
+                        var room = rooms[ri];
+                        if (room.name === self.native.name) {
+                            _.extend(self.native, room)
+                            self._pulled();
+                            break;
+                        }
+                    }
+                }
+
+                self.queue.finished(qitem);
+            });
+        }
+    };
+    self.queue.add(qitem);
+};
+
+TCPConnectedBridge.prototype._pulled = function() {
+    var self = this;
+
+    var on = false;
+    var level = 0;
+
+    for (var di in self.native.device) {
+        var device = self.native.device[di];
+        on |= (device.state !== "0");
+        level = Math.max(level, parseInt(device.level || 0));
+    }
+
+    self.pulled({
+        on: on,
+        brightness: level,
+    });
 };
 
 /* --- state --- */
@@ -198,13 +300,9 @@ TCPConnectedBridge.prototype.meta = function () {
     }
 
     return {
-        // "iot:thing": _.id.thing_urn.unique("TCPConnected", self.initd.name),
-        // "iot:device": _.id.thing_urn.unique("TCPConnected", self.initd.name),
+        "iot:thing": _.id.thing_urn.unique("TCPConnected", self.native.mac.replace(/:/g, "")),
         "schema:manufacturer": "http://www.tcpi.com/",
-        // "schema:name": self.initd.name || "Hue",
-        // "iot:number": self.initd.number,
-        // "schema:manufacturer": "http://philips.com/",
-        // "schema:model": "http://meethue.com/",
+        "schema:name": self.native.name || "TCPi",
     };
 };
 
