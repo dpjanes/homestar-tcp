@@ -8,9 +8,9 @@ var iotdb = require("iotdb");
 var _ = iotdb._;
 
 try {
-    var model = require('homestar-wemo')
+    var model = require('homestar-wemo');
 } catch (x) {
-    var model = require('../index')
+    var model = require('../index');
 }
 
 var _ = model.iotdb._;

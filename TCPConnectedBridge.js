@@ -46,8 +46,7 @@ var TCPConnectedBridge = function (initd, native) {
     var self = this;
 
     self.initd = _.defaults(initd,
-        iotdb.keystore().get("bridges/TCPConnectedBridge/initd"),
-        {
+        iotdb.keystore().get("bridges/TCPConnectedBridge/initd"), {
             arp: true,
             host: null,
             poll: 30,
@@ -77,9 +76,9 @@ TCPConnectedBridge.prototype.discover = function () {
 
     if (self.initd.arp) {
         self._discover_arp();
-    /*
-    } else if (self.initd.host) {
-        self._discover_host(self.initd.host); */
+        /*
+        } else if (self.initd.host) {
+            self._discover_host(self.initd.host); */
     } else {
         logger.error({
             method: "discover",
@@ -98,7 +97,7 @@ TCPConnectedBridge.prototype._discover_arp = function () {
     arp.browser({
         verbose: true,
         poll: 3 * 60,
-    }, function(error, arpd) {
+    }, function (error, arpd) {
         if (!arpd) {
             return;
         }
@@ -210,7 +209,7 @@ TCPConnectedBridge.prototype.push = function (pushd) {
     }
 
     if (pushd.brightness !== undefined) {
-        if (pushed.brightness === 0) {
+        if (pushd.brightness === 0) {
             putd.on = false;
         } else {
             putd.on = true;
@@ -231,7 +230,7 @@ TCPConnectedBridge.prototype.push = function (pushd) {
             if (putd.brightness !== undefined) {
                 self.native.tcp.SetRoomLevelByName(self.native.name, putd.brightness);
             }
-            
+
             self.pulled(putd);
             self.queue.finished(qitem);
         }
@@ -251,13 +250,12 @@ TCPConnectedBridge.prototype.pull = function () {
     var qitem = {
         id: "pull",
         run: function () {
-            self.native.tcp.GetState(function(error, rooms) {
-                if (error) {
-                } else {
+            self.native.tcp.GetState(function (error, rooms) {
+                if (error) {} else {
                     for (var ri in rooms) {
                         var room = rooms[ri];
                         if (room.name === self.native.name) {
-                            _.extend(self.native, room)
+                            _.extend(self.native, room);
                             self._pulled();
                             break;
                         }
@@ -271,7 +269,7 @@ TCPConnectedBridge.prototype.pull = function () {
     self.queue.add(qitem);
 };
 
-TCPConnectedBridge.prototype._pulled = function() {
+TCPConnectedBridge.prototype._pulled = function () {
     var self = this;
 
     var on = false;
@@ -448,7 +446,7 @@ TCPConnectedBridge.prototype._find_devices_to_configure = function () {
         arp.browser({
             verbose: true,
             poll: 3 * 60,
-        }, function(error, arpd) {
+        }, function (error, arpd) {
             if (!arpd) {
                 return;
             }
@@ -493,4 +491,3 @@ TCPConnectedBridge.prototype._find_devices_to_configure = function () {
  *  API
  */
 exports.Bridge = TCPConnectedBridge;
-
