@@ -1,0 +1,17 @@
+{% extends "template" %}
+{% block content %}
+<h1>TCP Connected{% if device %} &mdash; {{ device.name }}{% endif %}</h1>
+<p class="alert alert-danger" role="alert">
+{{ error }}
+</p>
+<ul>
+    {% if device %}
+    <li>
+        <a href="?action=pair">Try pairing again</a>
+    </li>
+    {% endif %}
+    <li>
+        <a href="../..">Back to Hub List</a>
+    </li>
+</ul>
+{% endblock %}

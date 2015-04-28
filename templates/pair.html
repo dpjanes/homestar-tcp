@@ -1,0 +1,23 @@
+{% extends "template" %}
+{% block content %}
+<h1>TCP Connected &mdash; {{ device.name }}</h1>
+{% if d.is_configured %}
+<p class="alert alert-info" role="alert">
+Note that this Hub is already configured,
+so you don't have to do this again.
+</p>
+{% endif %}
+<p class="alert alert-info" role="alert">
+When you're ready, have someone push the button on
+the TCP Connected Hub.
+Then press the pair button below.
+</p>
+<p>
+<a type="button" class="btn btn-primary" href="?action=pair">Pair</a>
+</p>
+<ul>
+    <li>
+        <a href="../..">Back to Hub List</a>
+    </li>
+</ul>
+{% endblock %}

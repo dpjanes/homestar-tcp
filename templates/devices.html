@@ -1,0 +1,45 @@
+{% extends "template" %}
+{% block content %}
+<h1>TCP Connected</h1>
+<p>
+Select a Hub to configure below. 
+</p>
+
+<h2>Hubs</h2>
+{% if devices.length == 0 %}
+<p class="alert alert-danger" role="alert">
+    No hubs found yet - try refreshing
+    or see the troubleshooting section below.
+</p>
+{% else %}
+<ul>
+{% for d in devices %}
+    <li>
+        <a href="mac/{{ d.mac }}">{{ d.name }}</a>
+        {% if d.is_configured %}
+            &mdash; <b>configured</b>
+        {% else %}
+            &mdash; <b>not configured yet</b>
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+{% endif %}
+
+
+<h2>Troubleshooting</h2>
+<ul>
+    <li>
+        Sometimes it takes a while for a Hub to be found.
+        Try reloading this page
+    </li>
+    <li>
+        Make sure your TCP Connected Hub is plugged in and connected
+        to the network.
+    </li>
+    <li>
+        Make sure you can see it from the TCP Connected App. 
+        If you can't see it there, you won't see it here
+    </li>
+</ul>
+{% endblock %}

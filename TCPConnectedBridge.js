@@ -27,6 +27,7 @@ var _ = iotdb._;
 var bunyan = iotdb.bunyan;
 
 var arp = require('iotdb-arp');
+var path = require('path');
 
 var TCPControlPoint = require('./tcp-connected');
 
@@ -316,9 +317,180 @@ TCPConnectedBridge.prototype.reachable = function () {
 /**
  *  See {iotdb.bridge.Bridge#configure} for documentation.
  */
-TCPConnectedBridge.prototype.configure = function (app) {};
+TCPConnectedBridge.prototype.configure = function (app) {
+    var self = this;
+
+    var ds = self._find_devices_to_configure();
+
+    app.use('/$', function (request, response) {
+        self._configure_devices(request, response);
+    });
+    app.use('/mac/:mac$', function (request, response) {
+        self._configure_device(request, response);
+    });
+
+    return "TCP Connected Light";
+};
+
+TCPConnectedBridge.prototype._configure_devices = function (request, response) {
+    var self = this;
+
+    var template = path.join(__dirname, "templates", "devices.html");
+    var templated = {
+        devices: self._find_devices_to_configure(),
+    };
+
+    response
+        .set('Content-Type', 'text/html')
+        .render(template, templated);
+};
+
+TCPConnectedBridge.prototype._configure_device = function (request, response) {
+    var self = this;
+
+    // find the MAC
+    var native = null;
+    var ds = self._find_devices_to_configure();
+    for (var di in ds) {
+        var d = ds[di];
+        if (d.mac === request.params.mac) {
+            native = d;
+            break;
+        }
+    }
+
+    if (native && (request.query.action === "pair")) {
+        return self._pair_device(request, response, native);
+    } else {
+        return self._prepair_device(request, response, native);
+    }
+};
+
+TCPConnectedBridge.prototype._prepair_device = function (request, response, native) {
+    var self = this;
+
+    var template;
+    var templated = {
+        device: native,
+    };
+
+    if (native) {
+        template = path.join(__dirname, "templates", "pair.html");
+    } else {
+        template = path.join(__dirname, "templates", "error.html");
+        templated.error = "This TCP Connected Bridge has not been found yet - try reloading?";
+    }
+
+    response
+        .set('Content-Type', 'text/html')
+        .render(template, templated);
+};
+
+TCPConnectedBridge.prototype._pair_device = function (request, response, native) {
+    var self = this;
+
+    var account_value = "hue" + _.uid(16);
+    var account_key = "/bridges/TCPConnectedBridge/" + native.mac + "/account";
+
+    /*
+    var url = "http://" + native.host + ":" + native.port + "/api";
+    unirest
+        .post(url)
+        .headers({
+            'Accept': 'application/json'
+        })
+        .type('json')
+        .send({
+            devicetype: "test user",
+            username: account_value
+        })
+        .end(function (result) {
+            var template;
+            var templated = {
+                device: native,
+            };
+
+            var error = null;
+            var success = null;
+
+            if (!result.ok) {
+                template = path.join(__dirname, "templates", "error.html");
+                templated.error = result.text;
+            } else if (result.body && result.body.length && result.body[0].error) {
+                error = result.body[0].error;
+                if (error && error.description) {
+                    templated.error = error.description;
+                } else {
+                    templated.error = "could not get error description";
+                }
+                template = path.join(__dirname, "templates", "error.html");
+            } else {
+                template = path.join(__dirname, "templates", "success.html");
+
+                iotdb.keystore().save(account_key, account_value);
+            }
+
+            response
+                .set('Content-Type', 'text/html')
+                .render(template, templated);
+        });
+    */
+};
+
+var _dd;
+
+TCPConnectedBridge.prototype._find_devices_to_configure = function () {
+    var self = this;
+
+    if (_dd === undefined) {
+        _dd = {};
+
+        arp.browser({
+            verbose: true,
+            poll: 3 * 60,
+        }, function(error, arpd) {
+            if (!arpd) {
+                return;
+            }
+
+            if (!arpd.mac.match(/^D4:A9:28:/)) {
+                return;
+            }
+
+            if (_dd[arpd.mac]) {
+                return;
+            }
+
+            var account_key = "/bridges/TCPConnectedBridge/" + arpd.mac + "/account";
+            var account = iotdb.keystore().get(account_key);
+
+            arpd.is_configured = account ? true : false;
+            arpd.name = arpd.mac;
+            _dd[arpd.mac] = arpd;
+        });
+    }
+
+    var ds = [];
+    for (var di in _dd) {
+        var d = _dd[di];
+        ds.push(d);
+    }
+
+    ds.sort(function compare(a, b) {
+        if (a.name < b.name) {
+            return -1;
+        } else if (a.name > b.name) {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
+
+    return ds;
+};
 
 /*
  *  API
  */
 exports.Bridge = TCPConnectedBridge;
+
