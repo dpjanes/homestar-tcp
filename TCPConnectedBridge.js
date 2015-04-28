@@ -224,7 +224,7 @@ TCPConnectedBridge.prototype.push = function (pushd) {
             putd.on = true;
         }
 
-        putd.brightness = true;
+        putd.brightness = pushd.brightness;
     }
 
     var qitem = {
@@ -428,7 +428,7 @@ TCPConnectedBridge.prototype._find_devices_to_configure = function () {
         _dd = {};
 
         arp.browser({
-            verbose: true,
+            verbose: false,
             poll: 3 * 60,
         }, function (error, arpd) {
             if (!arpd) {

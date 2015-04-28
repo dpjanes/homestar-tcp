@@ -165,44 +165,6 @@ TCPConnected.prototype.SetRoomLevelByName = function (name, level, callback) {
     });
 };
 
-/* note that state must have been already pulled */
-TCPConnected.prototype.GetRoomStateByName = function (name, callback) {
-    var self = this;
-    callback = callback ? callback : function () {};
-
-    self.rooms.forEach(function (room) {
-        if (room["name"] === name) {
-            var state = 0;
-            var i = 0;
-            var sum = 0;
-            var devices = room["device"];
-            if (typeof (devices["did"]) !== 'undefined') {
-                i = i + 1;
-                if (devices["state"] !== "0") {
-                    state = 1;
-                    sum = sum + parseInt(devices["level"]);
-                }
-            } else {
-                devices.forEach(function (device) {
-                    i = i + 1;
-                    if (device["state"] !== "0") {
-                        state = 1;
-                        sum = sum + parseInt(device["level"]);
-                    }
-                });
-
-            }
-            if (i === 0) {
-                sum = 0;
-                i = 1;
-                state = 0;
-            }
-            var level = sum / i;
-            callback(null, state, level);
-        }
-    });
-};
-
 /* -- internal helpers -- */
 
 TCPConnected.prototype._GetRIDByName = function (name) {
