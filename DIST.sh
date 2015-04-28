@@ -31,7 +31,7 @@ echo "=================="
 
     tar cf - \
         README.md \
-        LICENSE.txt \
+        LICENSE \
         package.json homestar.json \
         TCPConnectedBridge.js models/TCPConnectedLight.js tcp-connected.js \
         |

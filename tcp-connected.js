@@ -67,58 +67,16 @@ TCPConnected.prototype.SyncGateway = function (callback) {
     });
 
     self._request(payload, function (error, xml) {
-        console.log("error", error);
-        console.log("xml", xml);
+        if (error) {
+            callback(error);
+        } else if (!xml) {
+            callback("no response from TCP Gateway?");
+        } else if (!xml.token) {
+            callback("no token from TCP Gateway?");
+        } else {
+            callback(null, xml.token);
+        }
     });
-
-    /*
-    var data - {
-    }
-	var gLogInCommand = util.format(LogInCommand,username,password);
-	var payload = util.format(RequestString,'GWRLogin',encodeURIComponent(gLogInCommand));
-	var options = {
-		hostname: this._host,
-		port: 443,
-		path: '/gwr/gop.php',
-		method: 'POST',
-		headers:{
-		  'Content-Type':'text/xml; charset="utf-8"',
-		  'Content-Length':payload.length
-		},
-		rejectUnauthorized: false,
-		agent: false
-	};
-	
-	tcpSocket = https.request(options, function(res) {
-		res.on('data', function(data){
-			process.stdout.write(data);
-			if(data == "<gip><version>1</version><rc>404</rc></gip>"){
-				console.log("Permission Denied: Gateway Not In Sync Mode. Press Button on Gateway to Sync.");
-				cb("gateway not in sync mode - press button on Gateway");
-			}else{
-                console.log(data)
-				xml(data,function(error,result){	
-                    console.log(error, error);
-					if(result['token'] != undefined){
-						this._token = result['token'];
-						nconf.use('file', { file: './config.json' });
-						nconf.set('token', this._token);
-						nconf.save(function (err) {
-							if (err) {
-								console.error(err.message);
-								return;
-							}
-							console.log('Configuration saved successfully.');
-						});
-						callback(null, result[token]);
-					}
-				});
-			}
-		});
-	});
-	
-	tcpSocket.write(payload);
-    */
 };
 
 /**

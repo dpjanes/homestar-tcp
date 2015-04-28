@@ -113,7 +113,17 @@ TCPConnectedBridge.prototype._discover_arp = function () {
 TCPConnectedBridge.prototype._discover_arpd = function (arpd) {
     var self = this;
 
-    var tcp = new TCPControlPoint(arpd.ip, 'dk0bdkn4ls3rj1dr4034xy10cy913k87am8dx179');
+    var token_key = "/bridges/TCPConnectedBridge/" + arpd.mac + "/token";
+    var token = iotdb.keystore().get(token_key);
+    if (!token) {
+        logger.error({
+            method: "_discover_arpd",
+            cause: "needs to be configured by user first",
+        }, "TCP Hub is not configured");
+        return;
+    }
+
+    var tcp = new TCPControlPoint(arpd.ip, token);
 
     tcp.GetState(function (error, rooms) {
         if (rooms === null) {
@@ -130,7 +140,6 @@ TCPConnectedBridge.prototype._discover_arpd = function (arpd) {
         }
     });
 };
-
 
 /**
  *  See {iotdb.bridge.Bridge#connect} for documentation.
@@ -387,52 +396,27 @@ TCPConnectedBridge.prototype._prepair_device = function (request, response, nati
 TCPConnectedBridge.prototype._pair_device = function (request, response, native) {
     var self = this;
 
-    var account_value = "hue" + _.uid(16);
-    var account_key = "/bridges/TCPConnectedBridge/" + native.mac + "/account";
+    var token_key = "/bridges/TCPConnectedBridge/" + native.mac + "/token";
 
-    /*
-    var url = "http://" + native.host + ":" + native.port + "/api";
-    unirest
-        .post(url)
-        .headers({
-            'Accept': 'application/json'
-        })
-        .type('json')
-        .send({
-            devicetype: "test user",
-            username: account_value
-        })
-        .end(function (result) {
-            var template;
-            var templated = {
-                device: native,
-            };
+    var tcp = new TCPControlPoint(native.ip);
+    tcp.SyncGateway(function (error, token) {
+        var template;
+        var templated = {
+            device: native,
+        };
 
-            var error = null;
-            var success = null;
+        if (error) {
+            template = path.join(__dirname, "templates", "error.html");
+            templated.error = error;
+        } else {
+            template = path.join(__dirname, "templates", "success.html");
 
-            if (!result.ok) {
-                template = path.join(__dirname, "templates", "error.html");
-                templated.error = result.text;
-            } else if (result.body && result.body.length && result.body[0].error) {
-                error = result.body[0].error;
-                if (error && error.description) {
-                    templated.error = error.description;
-                } else {
-                    templated.error = "could not get error description";
-                }
-                template = path.join(__dirname, "templates", "error.html");
-            } else {
-                template = path.join(__dirname, "templates", "success.html");
-
-                iotdb.keystore().save(account_key, account_value);
-            }
-
-            response
-                .set('Content-Type', 'text/html')
-                .render(template, templated);
-        });
-    */
+            iotdb.keystore().save(token_key, token);
+        }
+        response
+            .set('Content-Type', 'text/html')
+            .render(template, templated);
+    });
 };
 
 var _dd;
@@ -455,14 +439,10 @@ TCPConnectedBridge.prototype._find_devices_to_configure = function () {
                 return;
             }
 
-            if (_dd[arpd.mac]) {
-                return;
-            }
+            var token_key = "/bridges/TCPConnectedBridge/" + arpd.mac + "/token";
+            var token = iotdb.keystore().get(token_key);
 
-            var account_key = "/bridges/TCPConnectedBridge/" + arpd.mac + "/account";
-            var account = iotdb.keystore().get(account_key);
-
-            arpd.is_configured = account ? true : false;
+            arpd.is_configured = token ? true : false;
             arpd.name = arpd.mac;
             _dd[arpd.mac] = arpd;
         });
