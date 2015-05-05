@@ -95,7 +95,7 @@ TCPConnectedBridge.prototype._discover_arp = function () {
     }, "called");
 
     arp.browser({
-        verbose: true,
+        verbose: self.initd.verbose,
         poll: 3 * 60,
     }, function (error, arpd) {
         if (!arpd) {
@@ -327,6 +327,8 @@ TCPConnectedBridge.prototype.reachable = function () {
 TCPConnectedBridge.prototype.configure = function (app) {
     var self = this;
 
+    self.html_root = app.html_root || "/";
+
     var ds = self._find_devices_to_configure();
 
     app.use('/$', function (request, response) {
@@ -344,6 +346,7 @@ TCPConnectedBridge.prototype._configure_devices = function (request, response) {
 
     var template = path.join(__dirname, "templates", "devices.html");
     var templated = {
+        html_root: self.html_root,
         devices: self._find_devices_to_configure(),
     };
 
@@ -378,6 +381,7 @@ TCPConnectedBridge.prototype._prepair_device = function (request, response, nati
 
     var template;
     var templated = {
+        html_root: self.html_root,
         device: native,
     };
 
@@ -402,6 +406,7 @@ TCPConnectedBridge.prototype._pair_device = function (request, response, native)
     tcp.SyncGateway(function (error, token) {
         var template;
         var templated = {
+            html_root: self.html_root,
             device: native,
         };
 
