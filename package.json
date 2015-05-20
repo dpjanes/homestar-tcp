@@ -24,8 +24,8 @@
     "main": "index.js", 
     "name": "homestar-tcp", 
     "peerDependencies": {
-        "iotdb": ">=0.6.3", 
-        "iotdb-arp": ">=0.0.3"
+        "iotdb": ">=0.6.9", 
+        "iotdb-arp": ">=0.0.4"
     }, 
     "private": false, 
     "repository": {
@@ -35,5 +35,5 @@
     "scripts": {
         "test": "grunt"
     }, 
-    "version": "0.0.6"
+    "version": "0.0.7"
 }
