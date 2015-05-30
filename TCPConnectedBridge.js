@@ -53,7 +53,12 @@ var TCPConnectedBridge = function (initd, native) {
         }
     );
     self.native = native;
-    self.stated = {};
+
+    self._reachable = false;
+    self.stated = {
+        on: false,
+        brightness: 0,
+    };
 
     if (self.native) {
         self.queue = _.queue("TCPConnectedBridge");
@@ -203,9 +208,10 @@ TCPConnectedBridge.prototype.disconnect = function () {
 /**
  *  See {iotdb.bridge.Bridge#push} for documentation.
  */
-TCPConnectedBridge.prototype.push = function (pushd) {
+TCPConnectedBridge.prototype.push = function (pushd, done) {
     var self = this;
     if (!self.native) {
+        done(new Error("not connected", pushd));
         return;
     }
 
@@ -215,6 +221,10 @@ TCPConnectedBridge.prototype.push = function (pushd) {
 
     if (pushd.on !== undefined) {
         putd.on = pushd.on;
+
+        if ((pushd.brightness === undefined) && (self.stated.brightness === 0)) {
+            putd.brightness = 100;
+        }
     }
 
     if (pushd.brightness !== undefined) {
@@ -242,7 +252,10 @@ TCPConnectedBridge.prototype.push = function (pushd) {
 
             self.pulled(putd);
             self.queue.finished(qitem);
-        }
+        },
+        coda: function () {
+            done();
+        },
     };
     self.queue.add(qitem);
 };
@@ -281,19 +294,24 @@ TCPConnectedBridge.prototype.pull = function () {
 TCPConnectedBridge.prototype._pulled = function () {
     var self = this;
 
-    var on = false;
-    var level = 0;
+    var reachable = false;
+
+    self.stated.on = false;
+    self.stated.brightness = 0;
 
     for (var di in self.native.device) {
         var device = self.native.device[di];
-        on |= (device.state !== "0");
-        level = Math.max(level, parseInt(device.level || 0));
+        self.stated.on |= (device.state !== "0");
+        self.stated.brightness = Math.max(self.stated.brightness, parseInt(device.level || 0));
+        reachable |= (device.offline !== "1");
     }
 
-    self.pulled({
-        on: on,
-        brightness: level,
-    });
+    self.pulled(self.stated);
+
+    if (self._reachable !== reachable) {
+        self._reachable = reachable;
+        self.pulled();
+    }
 };
 
 /* --- state --- */
@@ -318,7 +336,7 @@ TCPConnectedBridge.prototype.meta = function () {
  *  See {iotdb.bridge.Bridge#reachable} for documentation.
  */
 TCPConnectedBridge.prototype.reachable = function () {
-    return this.native !== null;
+    return (this.native !== null) && this._reachable;
 };
 
 /**

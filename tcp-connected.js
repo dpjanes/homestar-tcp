@@ -213,7 +213,6 @@ TCPConnected.prototype._request = function (payload, callback) {
         })
         .send(payload)
         .end(function (result) {
-            // console.log(result);
             if (!result.ok) {
                 logger.error({
                     method: "_request",
