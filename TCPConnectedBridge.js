@@ -36,6 +36,9 @@ var logger = bunyan.createLogger({
     module: 'TCPConnectedBridge',
 });
 
+var arping = false;
+var ipd = {};
+
 /**
  *  See {iotdb.bridge.Bridge#Bridge} for documentation.
  *  <p>
@@ -92,8 +95,14 @@ TCPConnectedBridge.prototype.discover = function () {
     }
 };
 
+
 TCPConnectedBridge.prototype._discover_arp = function () {
     var self = this;
+
+    if (arping) {
+        return;
+    }
+    arping = true;
 
     logger.info({
         method: "_discover_arp",
@@ -110,6 +119,12 @@ TCPConnectedBridge.prototype._discover_arp = function () {
         if (!arpd.mac.match(/^D4:A9:28:/)) {
             return;
         }
+
+        if (ipd[arpd.ip]) {
+            return;
+        }
+
+        ipd[arp.ip] = true;
 
         self._discover_arpd(arpd);
     });
@@ -139,6 +154,7 @@ TCPConnectedBridge.prototype._discover_arpd = function (arpd) {
         for (var ri in rooms) {
             var room = rooms[ri];
             room.mac = arpd.mac;
+            room.ip = arpd.ip;
             room.tcp = tcp;
 
             self.discovered(new TCPConnectedBridge(self.initd, room));
@@ -186,6 +202,8 @@ TCPConnectedBridge.prototype._forget = function () {
     logger.info({
         method: "_forget"
     }, "called");
+
+    delete ipd[self.native.ip]
 
     self.native = null;
     self.pulled();
