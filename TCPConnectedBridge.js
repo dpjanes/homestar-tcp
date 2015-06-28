@@ -124,7 +124,7 @@ TCPConnectedBridge.prototype._discover_arp = function () {
             return;
         }
 
-        ipd[arp.ip] = true;
+        ipd[arpd.ip] = true;
 
         self._discover_arpd(arpd);
     });
