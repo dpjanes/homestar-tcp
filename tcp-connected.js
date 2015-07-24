@@ -224,7 +224,11 @@ TCPConnected.prototype._request = function (payload, callback) {
                 callback('sync-not-pressed');
             } else if (result.body) {
                 xml2js.parseString(result.body, function (error, result) {
-                    if (result.gip) {
+                    if (error) {
+                        callback(error);
+                    } else if (!result) {
+                        callback("no XML result?");
+                    } else if (result.gip) {
                         callback(null, _flatten(result.gip));
                     } else {
                         callback(null, _flatten(result.gwrcmds));
