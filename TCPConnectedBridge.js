@@ -344,7 +344,7 @@ TCPConnectedBridge.prototype.meta = function () {
     }
 
     return {
-        "iot:thing": _.id.thing_urn.unique("TCPConnected", self.native.mac.replace(/:/g, "")),
+        "iot:thing-id": _.id.thing_urn.unique("TCPConnected", self.native.mac.replace(/:/g, "")),
         "schema:manufacturer": "http://www.tcpi.com/",
         "schema:name": self.native.name || "TCPi",
     };
