@@ -11,8 +11,8 @@ var iotdb = require("iotdb");
 exports.Model = iotdb.make_model('TCPConnectedLight')
     .facet(":lighting")
     .name("TCP Connected Light")
-    .o("on", iotdb.boolean.on)
-    .o("brightness", iotdb.number.percent.brightness)
+    .io("on", iotdb.boolean.on)
+    .io("brightness", iotdb.number.percent.brightness)
     .make();
 
 exports.binding = {
