@@ -33,7 +33,8 @@ echo "=================="
         README.md \
         LICENSE \
         package.json homestar.json \
-        TCPConnectedBridge.js models/TCPConnectedLight.js tcp-connected.js \
+        TCPConnectedBridge.js tcp-connected.js \
+        models/*.js models/*.json \
         |
     ( cd "${NPM_DST}" && tar xvf - && npm publish ) || exit 1
     git commit -m "new release" package.json || exit 1
