@@ -1,7 +1,7 @@
 # homestar-tcp
 IOTDB Bridge for TCP (Connected Lights)
 
-<img src="https://github.com/dpjanes/iotdb-homestar/blob/master/docs/HomeStar.png" align="right" />
+<img src="https://raw.githubusercontent.com/dpjanes/iotdb-homestar/master/docs/HomeStar.png" align="right" />
 
 See <a href="samples/">the samples</a> for details how to add to your project.
 
