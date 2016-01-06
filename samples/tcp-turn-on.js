@@ -1,12 +1,22 @@
 /*
  *  This demonstrates the the raw TCP functions
+ *
+ *  Make sure to copy 'tcpd.json.template' to
+ *  'tcpd.json' and edit. The token will be provided
+ *  by 'tcp-sync.js'
  */
 
 "use strict";
 
 var TCPConnected = require('../tcp-connected');
-var tcp = new TCPConnected('192.168.0.11', 'dk0bdkn4ls3rj1dr4034xy10cy913k87am8dx179');
+var tcpd = require('./tcp.json');
+var tcp = new TCPConnected(tcpd.host, tcpd.token);
 
-tcp.SetRoomOnByName('Bedroom', true, function (error, rooms) {
-    console.log("SetRoomOnByName", error, rooms);
+tcp.SetRoomOnByName(tcpd.room, true, function (error, rooms) {
+    if (error) {
+        console.log("#", "tcp.SetRoomOnByName(true)", error);
+        process.exit(1);
+    }
+
+    console.log("+", "tcp.SetRoomOnByName(true)", "ok");
 });

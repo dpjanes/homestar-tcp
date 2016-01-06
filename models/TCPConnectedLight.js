@@ -8,5 +8,5 @@
 
 exports.binding = {
     bridge: require('../TCPConnectedBridge').Bridge,
-    model: require('./TCPConnectedLight.json'),
+    model: require('./TcpConnectedLight.json'),
 };
