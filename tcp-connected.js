@@ -21,13 +21,12 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var iotdb = require('iotdb');
 var _ = iotdb._;
-var bunyan = iotdb.bunyan;
 
 var util = require('util');
 var unirest = require('unirest');
 var xml2js = require('xml2js');
 
-var logger = bunyan.createLogger({
+var logger = iotdb.logger({
     name: 'homestar-tcp',
     module: 'tcp-connected',
 });

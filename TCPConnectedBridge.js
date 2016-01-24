@@ -24,14 +24,13 @@
 
 var iotdb = require('iotdb');
 var _ = iotdb._;
-var bunyan = iotdb.bunyan;
 
 var arp = require('iotdb-arp');
 var path = require('path');
 
 var TCPControlPoint = require('./tcp-connected');
 
-var logger = bunyan.createLogger({
+var logger = iotdb.logger({
     name: 'homestar-tcp',
     module: 'TCPConnectedBridge',
 });
