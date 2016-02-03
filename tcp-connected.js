@@ -54,7 +54,7 @@ var TCPConnected = function (host, token) {
 TCPConnected.prototype.SyncGateway = function (callback) {
     var self = this;
 
-    var account_value = "tcp" + _.uid(16);
+    var account_value = "tcp" + _.random.id(16);
 
     var data = _.format(templated.LogInCommand, {
         email: account_value,
