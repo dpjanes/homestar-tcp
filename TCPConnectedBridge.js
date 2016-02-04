@@ -26,6 +26,7 @@ var iotdb = require('iotdb');
 var _ = iotdb._;
 
 var arp = require('iotdb-arp');
+var format = require('iotdb-format');
 var path = require('path');
 
 var TCPControlPoint = require('./tcp-connected');

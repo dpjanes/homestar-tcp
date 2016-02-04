@@ -26,6 +26,8 @@ var util = require('util');
 var unirest = require('unirest');
 var xml2js = require('xml2js');
 
+var format = require('iotdb-format');
+
 var logger = iotdb.logger({
     name: 'homestar-tcp',
     module: 'tcp-connected',
@@ -56,11 +58,11 @@ TCPConnected.prototype.SyncGateway = function (callback) {
 
     var account_value = "tcp" + _.random.id(16);
 
-    var data = _.format(templated.LogInCommand, {
+    var data = format.format(templated.LogInCommand, {
         email: account_value,
         password: account_value,
     });
-    var payload = _.format(templated.Request, {
+    var payload = format.format(templated.Request, {
         cmd: 'GWRLogin',
         data: encodeURIComponent(data),
     });
@@ -84,10 +86,10 @@ TCPConnected.prototype.GetState = function (callback) {
     var self = this;
     callback = callback ? callback : function () {};
 
-    var data = _.format(templated.GetState, {
+    var data = format.format(templated.GetState, {
         token: self._token,
     });
-    var payload = _.format(templated.Request, {
+    var payload = format.format(templated.Request, {
         cmd: 'GWRBatch',
         data: encodeURIComponent(data),
         token: self._token,
@@ -124,12 +126,12 @@ TCPConnected.prototype.SetRoomOnByName = function (name, on, callback) {
     var rid = this._GetRIDByName(name);
     callback = callback ? callback : function () {};
 
-    var data = _.format(templated.RoomSendCommand, {
+    var data = format.format(templated.RoomSendCommand, {
         rid: rid,
         value: on ? 1 : 0,
         token: self._token,
     });
-    var payload = _.format(templated.Request, {
+    var payload = format.format(templated.Request, {
         cmd: 'RoomSendCommand',
         data: encodeURIComponent(data),
         token: self._token,
@@ -148,12 +150,12 @@ TCPConnected.prototype.SetRoomLevelByName = function (name, level, callback) {
     var rid = this._GetRIDByName(name);
     callback = callback ? callback : function () {};
 
-    var data = _.format(templated.RoomSendLevelCommand, {
+    var data = format.format(templated.RoomSendLevelCommand, {
         rid: rid,
         value: level,
         token: self._token,
     });
-    var payload = _.format(templated.Request, {
+    var payload = format.format(templated.Request, {
         cmd: 'RoomSendCommand',
         data: encodeURIComponent(data),
         token: self._token,

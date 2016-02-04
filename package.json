@@ -5,6 +5,7 @@
     }, 
     "dependencies": {
         "iotdb": ">=0.12.0", 
+        "iotdb-format": "~0.0.2", 
         "unirest": "~0.4.2"
     }, 
     "description": "HomeStar / IOTDB Bridge for TCP Connected Lighting", 
