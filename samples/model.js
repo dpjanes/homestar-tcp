@@ -4,18 +4,12 @@
 
 "use strict";
 
-const iotdb = require("iotdb");
+const iotdb = require("iotdb")
 const _ = iotdb._;
 
-try {
-    var model = require('homestar-wemo');
-} catch (x) {
-    var model = require('../index');
-}
+const module = require('homestar-tcp');
 
-const _ = model.iotdb._;
-
-const wrapper = model.wrap("TCPConnectedLight");
+const wrapper = _.bridge.wrap("TCPConnectedLight", module.bindings);
 wrapper.on('thing', function (model) {
     console.log("+ discovered\n ", model.thing_id(), "\n ", model.state("meta"));
     model.on("state", function (model) {
