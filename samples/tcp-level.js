@@ -8,9 +8,9 @@
 
 "use strict";
 
-var TCPConnected = require('../tcp-connected');
-var tcpd = require('./tcp.json');
-var tcp = new TCPConnected(tcpd.host, tcpd.token);
+const TCPConnected = require('../tcp-connected');
+const tcpd = require('./tcp.json');
+const tcp = new TCPConnected(tcpd.host, tcpd.token);
 
 tcp.SetRoomLevelByName(tcpd.room, 0.5, function (error) {
     if (error) {

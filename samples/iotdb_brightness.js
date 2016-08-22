@@ -6,11 +6,11 @@
 
 "use strict";
 
-var iotdb = require('iotdb');
-var iot = iotdb.iot();
+const iotdb = require('iotdb');
+iotdb.use("homestar-tcp");
 
-var things = iot.connect('TCPConnectedLight');
-things.on("state", function(thing) {
+const things = iotdb.connect('TCPConnectedLight');
+things.on("istate", function(thing) {
     console.log("+", "state", thing.thing_id(), "\n ", thing.state("istate"));
 });
 things.on("meta", function(thing) {
@@ -20,7 +20,7 @@ things.on("thing", function(thing) {
     console.log("+", "discovered", thing.thing_id(), "\n ", thing.state("meta"));
 });
 
-var count = 0;
+let count = 0;
 setInterval(function() {
     things.set(':brightness', ( count++ % 10 ) * 10);
 }, 1000);

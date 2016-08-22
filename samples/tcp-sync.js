@@ -9,10 +9,10 @@
 
 "use strict";
 
-var fs = require('fs');
-var TCPConnected = require('../tcp-connected');
-var tcpd = require('./tcp.json');
-var tcp = new TCPConnected(tcpd.host);
+const fs = require('fs');
+const TCPConnected = require('../tcp-connected');
+const tcpd = require('./tcp.json');
+const tcp = new TCPConnected(tcpd.host);
 
 tcp.SyncGateway(function(error, token) {
     if (error) {

@@ -1,5 +1,5 @@
 # homestar-tcp
-IOTDB Bridge for TCP (Connected Lights)
+[IOTDB](https://github.com/dpjanes/node-iotdb) Bridge for TCP (Connected Lights)
 
 <img src="https://raw.githubusercontent.com/dpjanes/iotdb-homestar/master/docs/HomeStar.png" align="right" />
 
@@ -13,6 +13,7 @@ See: https://github.com/dpjanes/iotdb-homestar#installation
 Then
 
     $ homestar install homestar-tcp
+    $ homestar configure homestar-tcp
 
 # Credits
 
@@ -25,17 +26,18 @@ All the clever bits of connecting to TCP Lighting come from here:
 
 # Quick Start
 
-Set the light to half-bright
+Install and configure
 
 	$ npm install -g homestar ## with 'sudo' if error
 	$ homestar setup
 	$ homestar install homestar-tcp
 	$ homestar configure homestar-tcp
-	$ node
-	>>> iotdb = require('iotdb')
-	>>> iot = iotdb.iot()
-	>>> things = iot.connect("TCPConnectedLight")
-	>>> things.set(":brightness", 50)
+
+Set the light to half-bright
+
+	const iotdb = require('iotdb')
+	const things = iotdb.connect("TCPConnectedLight")
+	things.set(":brightness", 50)
 
 # Models
 
