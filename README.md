@@ -7,7 +7,11 @@
 
 See <a href="samples/">the samples</a> for details how to add to your project.
 
-Credit: all the clever bits of connecting to TCP Lighting come from here:
+* [Read about Bridges](https://github.com/dpjanes/node-iotdb/blob/master/docs/bridges.md)
+
+## Credits
+
+All the clever bits of connecting to TCP Lighting come from here:
 
 *  https://github.com/stockmopar/connectedbytcp
 *  http://home.stockmopar.com/connected-by-tcp-unofficial-api
