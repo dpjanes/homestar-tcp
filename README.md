@@ -22,6 +22,8 @@ All the clever bits of connecting to TCP Lighting come from here:
 * [Read this first](https://github.com/dpjanes/node-iotdb/blob/master/docs/install.md)
 * [Read about installing Home☆Star](https://github.com/dpjanes/node-iotdb/blob/master/docs/homestar.md) 
 
+Then:
+
     $ npm install -g homestar    ## may require sudo
     $ homestar setup
     $ npm install homestar-tcp
