@@ -25,7 +25,6 @@ All the clever bits of connecting to TCP Lighting come from here:
 Then:
 
     $ npm install -g homestar    ## may require sudo
-    $ homestar setup
     $ npm install homestar-tcp
     $ homestar configure homestar-tcp
 
