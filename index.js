@@ -26,3 +26,5 @@ exports.Bridge = require('./TCPConnectedBridge').Bridge;
 exports.bindings = [
     require('./models/TCPConnectedLight').binding,
 ];
+
+exports.module_folder = __dirname;
