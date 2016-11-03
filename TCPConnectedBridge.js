@@ -70,10 +70,6 @@ var TCPConnectedBridge = function (initd, native) {
 
 TCPConnectedBridge.prototype = new iotdb.Bridge();
 
-TCPConnectedBridge.prototype.name = function () {
-    return "TCPConnectedBridge";
-};
-
 /* --- lifecycle --- */
 
 /**
